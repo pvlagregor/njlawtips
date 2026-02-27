@@ -63,7 +63,15 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-          <p>© {year} NJ Law Tips. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <p>© {year} NJ Law Tips. All rights reserved.</p>
+            <Link
+              href="/privacy-policy"
+              className="text-xs hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </div>
           <p className="text-xs text-center md:text-right max-w-md">
             This site is for informational purposes only and does not constitute
             legal advice. Consult a licensed attorney for advice specific to your
