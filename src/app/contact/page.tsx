@@ -16,7 +16,7 @@ declare global {
 }
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [honeypot, setHoneypot] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -61,7 +61,7 @@ export default function ContactPage() {
 
       if (res.ok) {
         setStatus("success");
-        setForm({ name: "", email: "", message: "" });
+        setForm({ name: "", email: "", phone: "", message: "" });
         setTurnstileToken("");
         if (widgetIdRef.current && window.turnstile) {
           window.turnstile.reset(widgetIdRef.current);
@@ -171,6 +171,24 @@ export default function ContactPage() {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="jane@example.com"
+                    className="w-full border border-surface-border rounded-md px-4 py-3 text-text-primary text-sm focus:outline-none focus:border-blue-500 transition-colors bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="phone"
+                    className="block text-text-primary text-sm font-semibold mb-1.5"
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={handleChange}
+                    placeholder="(555) 123-4567"
                     className="w-full border border-surface-border rounded-md px-4 py-3 text-text-primary text-sm focus:outline-none focus:border-blue-500 transition-colors bg-white"
                   />
                 </div>

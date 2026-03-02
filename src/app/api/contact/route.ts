@@ -5,9 +5,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, email, message, website: honeypot, "cf-turnstile-response": turnstileToken } = body as {
+  const { name, email, phone, message, website: honeypot, "cf-turnstile-response": turnstileToken } = body as {
     name?: string;
     email?: string;
+    phone?: string;
     message?: string;
     website?: string;
     "cf-turnstile-response"?: string;
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
     to: toEmail,
     replyTo: email,
     subject: `New consultation request from ${name}`,
-    text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+    text: `Name: ${name}\nEmail: ${email}${phone ? `\nPhone: ${phone}` : ""}\n\nMessage:\n${message}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #0d1b2a; margin-bottom: 16px;">New Consultation Request</h2>
@@ -91,6 +92,10 @@ export async function POST(req: NextRequest) {
             <td style="padding: 8px 0; color: #4a5568; font-size: 14px; font-weight: 600;">Email</td>
             <td style="padding: 8px 0; font-size: 14px;"><a href="mailto:${email}" style="color: #4a90e2;">${email}</a></td>
           </tr>
+          ${phone ? `<tr>
+            <td style="padding: 8px 0; color: #4a5568; font-size: 14px; font-weight: 600;">Phone</td>
+            <td style="padding: 8px 0; font-size: 14px;"><a href="tel:${phone}" style="color: #4a90e2;">${phone}</a></td>
+          </tr>` : ""}
         </table>
         <hr style="border: none; border-top: 1px solid #e8ecf2; margin: 16px 0;" />
         <p style="color: #4a5568; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Message</p>
