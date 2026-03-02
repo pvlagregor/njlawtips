@@ -1,10 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import Script from "next/script";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        element: string | HTMLElement,
+        options: Record<string, unknown>
+      ) => string;
+      reset: (widgetId: string) => void;
+    };
+  }
+}
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [honeypot, setHoneypot] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
+
+  const renderTurnstile = useCallback(() => {
+    if (window.turnstile && turnstileRef.current && !widgetIdRef.current) {
+      widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        callback: (token: string) => setTurnstileToken(token),
+        "expired-callback": () => setTurnstileToken(""),
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // If script loaded before component mounted
+    if (window.turnstile) renderTurnstile();
+  }, [renderTurnstile]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -20,12 +52,20 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          website: honeypot,
+          "cf-turnstile-response": turnstileToken,
+        }),
       });
 
       if (res.ok) {
         setStatus("success");
         setForm({ name: "", email: "", message: "" });
+        setTurnstileToken("");
+        if (widgetIdRef.current && window.turnstile) {
+          window.turnstile.reset(widgetIdRef.current);
+        }
       } else {
         setStatus("error");
       }
@@ -36,6 +76,11 @@ export default function ContactPage() {
 
   return (
     <div>
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        onReady={renderTurnstile}
+      />
+
       {/* Hero */}
       <section
         className="relative overflow-hidden py-16 px-6 md:py-20"
@@ -149,6 +194,26 @@ export default function ContactPage() {
                     className="w-full border border-surface-border rounded-md px-4 py-3 text-text-primary text-sm focus:outline-none focus:border-blue-500 transition-colors bg-white resize-none"
                   />
                 </div>
+
+                {/* Honeypot — hidden from real users */}
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "-9999px" }}
+                >
+                  <label htmlFor="website">Website</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                {/* Cloudflare Turnstile */}
+                <div ref={turnstileRef} />
 
                 {status === "error" && (
                   <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-4 py-3">
