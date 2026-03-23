@@ -42,7 +42,7 @@ export function LatestPosts({ posts }: { posts: PostSummary[] }) {
           {posts.map((post) => (
             <Link
               key={post._id}
-              href={`/blog/${post.slug.current}`}
+              href={`/${post.slug.current}`}
               className="group block bg-surface-50 border border-surface-border rounded-[10px] overflow-hidden hover:border-blue-300 hover:shadow-sm transition-all"
             >
               {/* Featured image */}

@@ -53,7 +53,7 @@ npm run dev
 2. Click **Blog Post** → **Create**
 3. Fill in: Title, Slug (auto-generates), Excerpt, Featured Image, Categories, Body
 4. Click **Publish**
-5. The post appears on the blog index at `/blog` and has its own page at `/blog/[slug]`
+5. The post appears on the blog index at `/blog` and has its own page at `/[slug]`
 
 ---
 
@@ -71,7 +71,19 @@ To activate:
 
 ---
 
-## Deploying to Vercel (when ready)
+## Pushing Changes Live
+
+```bash
+git add .          # stages files in current directory and below
+# or
+git add -A         # stages files across the entire repo, regardless of current directory
+git commit -m "describe your changes"
+git push origin main
+```
+
+Vercel auto-deploys on every push to `main`.
+
+## Deploying to Vercel (first-time setup)
 
 1. Push the `website` folder to a GitHub repository
 2. Import the repo at vercel.com/new
@@ -92,7 +104,7 @@ src/
 │   ├── page.tsx                 # Homepage
 │   ├── about/page.tsx
 │   ├── blog/page.tsx            # Blog index
-│   ├── blog/[slug]/page.tsx     # Individual blog post
+│   ├── [slug]/page.tsx           # Individual blog post
 │   ├── contact/page.tsx         # Contact form (client component)
 │   ├── api/contact/route.ts     # Resend email API route
 │   ├── studio/[[...tool]]/      # Embedded Sanity Studio

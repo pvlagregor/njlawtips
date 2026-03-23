@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const slugs = await client.fetch<{ slug: string }[]>(getAllPostSlugsQuery);
     postRoutes = slugs.map((s) => ({
-      url: `${BASE_URL}/blog/${s.slug}`,
+      url: `${BASE_URL}/${s.slug}`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,

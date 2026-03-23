@@ -14,7 +14,7 @@ function formatDate(dateStr: string) {
 export function PostCard({ post }: { post: PostSummary }) {
   return (
     <Link
-      href={`/blog/${post.slug.current}`}
+      href={`/${post.slug.current}`}
       className="group block bg-white border border-surface-border rounded-[10px] overflow-hidden hover:border-blue-300 hover:shadow-sm transition-all"
     >
       {/* Featured image */}
